@@ -1,8 +1,14 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
+import { Injectable, NotFoundException, Inject } from "@nestjs/common";
 import { Product } from "./product.model";
+import { UserService } from "../user/user.service";
+import { User } from "../user/interface/user.interface";
 
 @Injectable()
 export class ProductService {
+    // constructor(){}
+    @Inject()
+    private userService: UserService
+    
     products: Product[] = [
         {
             "id": "0.08730393495292033",
@@ -23,7 +29,7 @@ export class ProductService {
             "price": 6666
         }
     ];
-
+    
     update(id: string, title: string, desc: string, price: number) {
         const [product, index] = this.findProduct(id);
         if(title) {
@@ -59,7 +65,12 @@ export class ProductService {
     }
 
     getList() {
-        return [...this.products]
+        const user: User = this.userService.getUser()
+        if (user) {
+            return [...this.products]
+        } else {
+            return []
+        }
     }
 
     deleteById(id: string) {
